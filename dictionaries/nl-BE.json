@@ -1,0 +1,17 @@
+{
+  "common": {
+    "home": "Home",
+    "products": "Producten"
+  },
+  "products": {
+    "addToCart": "In winkelwagen",
+    "backToHome": "Terug naar home",
+    "showingCount": "{count} producten weergegeven",
+    "browseDescription": "Bekijk alle producten. Het thema gebruikt semantische kleuren en aangepaste breekpunten: sm 481px, md 769px, lg 1280px, xl 1536px."
+  },
+  "localeModal": {
+    "title": "Kies je regio",
+    "selectLabel": "Taal en land",
+    "continueLabel": "Doorgaan"
+  }
+}

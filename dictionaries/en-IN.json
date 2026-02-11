@@ -1,0 +1,17 @@
+{
+  "common": {
+    "home": "Home",
+    "products": "Products"
+  },
+  "products": {
+    "addToCart": "Add to cart",
+    "backToHome": "Back to home",
+    "showingCount": "Showing {count} products",
+    "browseDescription": "Browse all products. Theme uses semantic colors and custom breakpoints: sm 481px, md 769px, lg 1280px, xl 1536px."
+  },
+  "localeModal": {
+    "title": "Select your region",
+    "selectLabel": "Language & country",
+    "continueLabel": "Continue"
+  }
+}

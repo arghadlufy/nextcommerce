@@ -1,0 +1,17 @@
+{
+  "common": {
+    "home": "होम",
+    "products": "उत्पाद"
+  },
+  "products": {
+    "addToCart": "कार्ट में जोड़ें",
+    "backToHome": "होम पर वापस",
+    "showingCount": "{count} उत्पाद दिखाए जा रहे हैं",
+    "browseDescription": "सभी उत्पाद ब्राउज़ करें। थीम में सेमेंटिक रंग और कस्टम ब्रेकपॉइंट हैं: sm 481px, md 769px, lg 1280px, xl 1536px."
+  },
+  "localeModal": {
+    "title": "अपना क्षेत्र चुनें",
+    "selectLabel": "भाषा और देश",
+    "continueLabel": "जारी रखें"
+  }
+}

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { getTheme, getThemeStyleContent } from "@/lib/theme";
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -45,9 +44,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-text-body min-h-screen`}
       >
-        <header className="sticky top-0 z-10 flex justify-end border-b border-outline bg-background-card px-4 py-2">
-          <ThemeSwitcher />
-        </header>
         {children}
       </body>
     </html>

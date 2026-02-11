@@ -11,7 +11,8 @@ This document describes the codebase’s implementations, algorithms, and design
 2. [Multi-country multi-language internationalization](#2-multi-country-multi-language-internationalization)
    - [2.3 Code execution flow](#23-code-execution-flow)
    - [2.6 Reason behind the approach](#26-reason-behind-the-approach)
-3. [Future implementations](#future-implementations)
+3. [Next.js Image optimization and egress](#3-nextjs-image-optimization-and-egress)
+4. [Future implementations](#future-implementations)
 
 ---
 
@@ -651,6 +652,104 @@ export function SetLang({ locale }: { locale: Locale }) {
 - **New locale:** Add the value to `SUPPORTED_LOCALES` and `LOCALE_LABELS` in `lib/i18n-constants.ts`. Add `dictionaries/{locale}.json` with the same key structure as existing dictionaries. Add a loader entry in `lib/i18n.ts` `dictionaries` map.
 - **New translation key:** Add the key to the `Dictionary` type in `lib/i18n.ts` and to every `dictionaries/*.json` file. Use the key in pages via `dict.*` or in client components via `useDictionary().*`.
 - **Cookie name:** `NEXT_LOCALE` is defined in `lib/i18n-constants.ts` as `COOKIE_LOCALE`; change there if needed.
+
+---
+
+## 3. Next.js Image optimization and egress
+
+### 3.1 Purpose
+
+- **Use the Next.js [`<Image>`](https://nextjs.org/docs/app/getting-started/images) component** instead of raw `<img>` so the framework can optimize delivery (sizing, format, lazy loading) and reduce layout shift.
+- **Control cost and egress:** Image Optimization can serve images through the Next.js server (or Vercel’s image pipeline). Egress is the bandwidth cost when those optimized images are sent to users; configuring remote sources and using local/static assets where possible helps keep egress predictable.
+
+Reference: [Next.js Image Optimization](https://nextjs.org/docs/app/getting-started/images).
+
+### 3.2 What the Next.js Image component does
+
+- **Size optimization:** Serves correctly sized images per device and can use modern formats (e.g. WebP).
+- **Visual stability:** Uses `width` / `height` (or `fill`) to avoid [Cumulative Layout Shift (CLS)](https://web.dev/articles/cls) while images load.
+- **Faster loads:** Native lazy loading by default; images load when they enter the viewport. Optional blur placeholder.
+- **Remote images:** Can resize and optimize images from remote URLs; requires [`remotePatterns`](https://nextjs.org/docs/app/api-reference/config/next-config-js) in `next.config.js` and explicit `width`/`height` (or `fill`).
+
+### 3.3 Local vs remote images
+
+| Source | Usage | Config |
+|--------|--------|--------|
+| **Local** | Put files under `public/`; use `src="/path.png"`. For static imports, Next.js can infer `width`/`height` and optional blur placeholder. | None. |
+| **Remote** | Use a URL string as `src`. You must provide `width` and `height` (or use `fill`). | Add the host to `images.remotePatterns` in `next.config.js`/`next.config.ts`. |
+
+**Code (remote image with config):** `next.config.ts`:
+
+```ts
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        port: "",
+        pathname: "/**",
+        search: "",
+      },
+    ],
+  },
+};
+
+export default nextConfig;
+```
+
+**Code (component):** Use `next/image` with `width`/`height` for remote URLs, or `fill` when the image should fill the parent:
+
+```tsx
+import Image from "next/image";
+
+// Explicit dimensions (avoids layout shift)
+<Image
+  src="https://images.unsplash.com/photo-..."
+  alt="Product"
+  width={400}
+  height={400}
+/>
+
+// Or fill parent (parent must have position: relative and dimensions)
+<div className="relative aspect-square">
+  <Image src={url} alt="..." fill className="object-cover" />
+</div>
+```
+
+### 3.4 Egress and cost considerations
+
+- **What is egress:** Data transferred *out* of your host (e.g. from Next.js server or Vercel edge) to the user. Serving optimized images through the Image Optimization API counts as egress.
+- **Why it matters:** On hosted platforms (e.g. Vercel), egress is often metered; large or numerous images can increase cost. Using `next/image` still improves UX (smaller payloads, better formats) but does not remove egress—it can reduce total bytes (smaller sizes/formats) and thus egress volume.
+- **Practical steps:** (1) Prefer local/static images in `public/` when possible. (2) Restrict remote sources in `remotePatterns` to known domains (e.g. your CDN or Unsplash). (3) Use appropriate `width`/`height` or `sizes` so the optimizer doesn’t serve larger images than needed. (4) If self-hosting, consider caching the Image Optimization output to reduce repeated work and bandwidth.
+
+**Code:** Restrict remote hosts in [next.config.js](https://nextjs.org/docs/app/api-reference/config/next-config-js) so only allowed domains use the optimizer:
+
+```ts
+// next.config.ts – be specific to avoid abuse and control egress sources
+images: {
+  remotePatterns: [
+    { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
+    // Add only domains you need
+  ],
+}
+```
+
+### 3.5 Files to touch in this project
+
+| Path | Role |
+|------|------|
+| `next.config.ts` | Add `images.remotePatterns` when using remote image URLs (e.g. product images from Unsplash or a CDN). |
+| Components that show product images (e.g. `app/[locale]/ProductCard.tsx`) | Replace `<img>` with `<Image>` from `next/image`; set `width`/`height` or use `fill` and ensure parent has dimensions. |
+
+**Current usage:** Product images are remote (e.g. Unsplash). `app/[locale]/ProductCard.tsx` currently uses a plain `<img>`. To use Image Optimization and avoid layout shift, switch to `next/image` and add the image host to `next.config.ts` as above.
+
+### 3.6 Extension
+
+- **More remote hosts:** Add further entries to `images.remotePatterns` with `protocol`, `hostname`, `pathname` (e.g. `"/my-bucket/**"`).
+- **Unoptimized fallback:** If you need to disable optimization for a specific image (e.g. external URL not in config), you can use a normal `<img>` or the `unoptimized` prop on `<Image>` (use sparingly; no optimization or format conversion).
 
 ---
 

@@ -22,20 +22,20 @@ export type Dictionary = {
   localeModal: { title: string; selectLabel: string; continueLabel: string };
 };
 
-const dictionaries: Record<Locale, () => Promise<{ default: Dictionary }>> = {
-  "en-BE": () =>
-    import("@/dictionaries/en-BE.json").then((m) => m as Promise<{ default: Dictionary }>),
-  "en-IN": () =>
-    import("@/dictionaries/en-IN.json").then((m) => m as Promise<{ default: Dictionary }>),
-  "nl-BE": () =>
-    import("@/dictionaries/nl-BE.json").then((m) => m as Promise<{ default: Dictionary }>),
-  "hi-IN": () =>
-    import("@/dictionaries/hi-IN.json").then((m) => m as Promise<{ default: Dictionary }>),
+// Map each locale to a lazy JSON import that resolves to the typed Dictionary
+const dictionaries: Record<Locale, () => Promise<Dictionary>> = {
+  "en-BE": async () =>
+    (await import("@/dictionaries/en-BE.json")).default as Dictionary,
+  "en-IN": async () =>
+    (await import("@/dictionaries/en-IN.json")).default as Dictionary,
+  "nl-BE": async () =>
+    (await import("@/dictionaries/nl-BE.json")).default as Dictionary,
+  "hi-IN": async () =>
+    (await import("@/dictionaries/hi-IN.json")).default as Dictionary,
 };
 
 export async function getDictionary(locale: Locale): Promise<Dictionary> {
   const loader = dictionaries[locale];
   if (!loader) throw new Error(`No dictionary for locale: ${locale}`);
-  const mod = await loader();
-  return mod.default;
+  return loader();
 }

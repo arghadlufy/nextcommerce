@@ -28,7 +28,12 @@ export default async function LocaleHomePage({
       <p className="text-text-body mb-6">{showingText}</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {mockProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            locale={locale}
+            addToCartLabel={dict.products.addToCart}
+          />
         ))}
       </div>
     </main>

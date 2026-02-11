@@ -5,7 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "db:generate": "npx prisma generate",
+    "db:migrate": "npx prisma migrate dev",
+    "db:studio": "npx prisma studio",
+    "db:push": "npx prisma db push",
+    "db:format": "npx prisma format"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.3.0",

@@ -20,6 +20,15 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Multi-store theme
+
+Theme is driven by the `STORE` env variable. The app loads `config/themes/{STORE}.theme.json` for light/dark colors.
+
+- **store1**: Set `STORE=store1` in `.env` (default). Uses `config/themes/store1.theme.json`.
+- **store2**: Set `STORE=store2` in `.env`, or copy `store2.env.example` to `.env` and set `STORE=store2`. Uses `config/themes/store2.theme.json`.
+
+Adding a new store: add `config/themes/{storeId}.theme.json` and set `STORE={storeId}` when running that store.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

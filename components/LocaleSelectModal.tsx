@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { setLocaleAndRedirect } from "@/app/actions/locale";
+import { setLocaleAndRedirect } from "@/lib/actions/locale";
 import {
   SUPPORTED_LOCALES,
   LOCALE_LABELS,

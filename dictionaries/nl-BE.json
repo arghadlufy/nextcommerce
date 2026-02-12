@@ -9,6 +9,14 @@
     "showingCount": "{count} producten weergegeven",
     "browseDescription": "Bekijk alle producten. Het thema gebruikt semantische kleuren en aangepaste breekpunten: sm 481px, md 769px, lg 1280px, xl 1536px."
   },
+  "home": {
+    "bannerHeading": "Producten voor de ziel",
+    "bannerSubtitle": "Nieuw leven blazen in cultureel vakmanschap",
+    "shopNow": "Nu winkelen",
+    "favorites": "Favorieten",
+    "seeAll": "Alles bekijken",
+    "categories": "Categorieën"
+  },
   "localeModal": {
     "title": "Kies je regio",
     "selectLabel": "Taal en land",

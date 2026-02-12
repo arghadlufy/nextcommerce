@@ -19,6 +19,14 @@ export type Dictionary = {
     showingCount: string;
     browseDescription: string;
   };
+  home: {
+    bannerHeading: string;
+    bannerSubtitle: string;
+    shopNow: string;
+    favorites: string;
+    seeAll: string;
+    categories: string;
+  };
   localeModal: { title: string; selectLabel: string; continueLabel: string };
 };
 

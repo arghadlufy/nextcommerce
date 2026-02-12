@@ -9,6 +9,14 @@
     "showingCount": "{count} उत्पाद दिखाए जा रहे हैं",
     "browseDescription": "सभी उत्पाद ब्राउज़ करें। थीम में सेमेंटिक रंग और कस्टम ब्रेकपॉइंट हैं: sm 481px, md 769px, lg 1280px, xl 1536px."
   },
+  "home": {
+    "bannerHeading": "आत्मा के लिए उत्पाद",
+    "bannerSubtitle": "सांस्कृतिक शिल्प में नई जान फूँकना",
+    "shopNow": "अभी खरीदें",
+    "favorites": "पसंदीदा",
+    "seeAll": "सब देखें",
+    "categories": "श्रेणियाँ"
+  },
   "localeModal": {
     "title": "अपना क्षेत्र चुनें",
     "selectLabel": "भाषा और देश",

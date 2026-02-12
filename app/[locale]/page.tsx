@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { getDictionary, hasLocale } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n-constants";
 import { ProductCard } from "./ProductCard";
 import { db } from "@/lib/db";
 import { delay } from "@/lib/utils";
 import { Pagination } from "@/components/Pagination";
-import ProductsSkeleton from "./products/ProductsSkeleton";
+import ProductsSkeleton from "./ProductsSkeleton";
 import { Suspense } from "react";
+import { getProductBySlug } from "@/lib/actions";
 
 const pageSize = 3;
 
@@ -48,6 +48,8 @@ export default async function LocaleHomePage({
   if (!hasLocale(locale)) notFound();
 
   const totalProducts = await db.product.count();
+
+  console.log(await getProductBySlug("smart-watch"));
 
   const page = Number(pageParam) || 1;
   const totalPages = Math.ceil(totalProducts / pageSize);

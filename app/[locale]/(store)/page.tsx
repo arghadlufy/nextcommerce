@@ -18,11 +18,7 @@ async function FeaturedProducts({ locale }: { locale: string }) {
     take: 3,
   });
 
-  console.log(products);
-
   const resolved = products.map((p) => resolveProduct(p, locale));
-
-  console.log(resolved);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">

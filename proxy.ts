@@ -13,6 +13,11 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Let /admin routes through without locale redirect
+  if (pathname.startsWith("/admin")) {
+    return NextResponse.next();
+  }
+
   const firstSegment = pathname.split("/")[1];
   const isSupportedLocale = SUPPORTED_LOCALES.includes(firstSegment as (typeof SUPPORTED_LOCALES)[number]);
 

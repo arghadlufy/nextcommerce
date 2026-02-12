@@ -6,6 +6,8 @@ import {
 import { PrismaClient, Prisma } from "../app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import "dotenv/config";
+import { readFileSync } from "fs";
+import { join } from "path";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -18,6 +20,7 @@ const prisma = new PrismaClient({
 export async function main() {
   await prisma.$transaction(async (tx) => {
     // Clean existing data inside the transaction so it is rolled back on failure
+    await tx.uiLabel.deleteMany();
     await tx.productTranslation.deleteMany();
     await tx.categoryTranslation.deleteMany();
     await tx.product.deleteMany();
@@ -80,6 +83,23 @@ export async function main() {
             description: t.description,
           },
         });
+      }
+    }
+
+    // Seed UI labels from dictionary JSON files
+    const locales = ["en-BE", "en-IN", "nl-BE", "hi-IN"];
+    for (const locale of locales) {
+      const filePath = join(__dirname, "..", "dictionaries", `${locale}.json`);
+      const dict = JSON.parse(readFileSync(filePath, "utf-8"));
+
+      for (const [namespace, entries] of Object.entries(dict)) {
+        for (const [key, value] of Object.entries(
+          entries as Record<string, string>,
+        )) {
+          await tx.uiLabel.create({
+            data: { locale, namespace, key, value },
+          });
+        }
       }
     }
   });

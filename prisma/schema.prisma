@@ -48,3 +48,13 @@ model CategoryTranslation {
 
   @@unique([categoryId, language])
 }
+
+model UiLabel {
+  id        String @id @default(cuid())
+  locale    String // "en-BE", "nl-BE", "hi-IN", etc.
+  namespace String // "common", "products", "home", "localeModal"
+  key       String // "home", "addToCart", "bannerHeading", etc.
+  value     String
+
+  @@unique([locale, namespace, key])
+}

@@ -12,16 +12,39 @@ model Product {
   name        String
   description String?
   price       Float
-  image String?
-  slug String @unique
+  image       String?
+  slug        String  @unique
 
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id]) // one-to-many relationship
+  categoryId   String
+  category     Category             @relation(fields: [categoryId], references: [id])
+  translations ProductTranslation[]
+}
+
+model ProductTranslation {
+  id          String  @id @default(cuid())
+  productId   String
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  language    String  // "en", "nl", "hi"
+  name        String
+  description String?
+
+  @@unique([productId, language])
 }
 
 model Category {
-  id   String @id @default(cuid())
-  name String
-  slug String @unique
-  products Product[]
+  id           String                @id @default(cuid())
+  name         String
+  slug         String                @unique
+  products     Product[]
+  translations CategoryTranslation[]
+}
+
+model CategoryTranslation {
+  id         String   @id @default(cuid())
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  language   String   // "en", "nl", "hi"
+  name       String
+
+  @@unique([categoryId, language])
 }

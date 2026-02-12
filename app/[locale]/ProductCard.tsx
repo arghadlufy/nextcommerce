@@ -4,12 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatPrice } from "@/lib/utils";
 import { useLocale } from "@/contexts/I18nContext";
-import { Prisma } from "../generated/prisma/client";
+import type { ResolvedProduct } from "@/lib/i18n-db";
 
 type ProductCardProps = {
-  product: Prisma.ProductGetPayload<{
-    include: { category: true };
-  }>;
+  product: ResolvedProduct;
 };
 
 export function ProductCard({ product }: ProductCardProps) {

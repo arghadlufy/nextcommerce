@@ -6,17 +6,27 @@ import { ProductCard } from "./ProductCard";
 import { db } from "@/lib/db";
 import { Banner } from "@/components/Banner";
 import { CategoriesBanner } from "@/components/CategoriesBanner";
+import { resolveProduct } from "@/lib/i18n-db";
 
 // Show first 3 products on the homepage as a preview
-async function FeaturedProducts() {
+async function FeaturedProducts({ locale }: { locale: string }) {
   const products = await db.product.findMany({
-    include: { category: true },
+    include: {
+      category: { include: { translations: true } },
+      translations: true,
+    },
     take: 3,
   });
 
+  console.log(products);
+
+  const resolved = products.map((p) => resolveProduct(p, locale));
+
+  console.log(resolved);
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-      {products.map((product) => (
+      {resolved.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </div>
@@ -54,7 +64,7 @@ export default async function LocaleHomePage({
           </Link>
         </div>
 
-        <FeaturedProducts />
+        <FeaturedProducts locale={locale} />
       </section>
 
       {/* Categories banner */}

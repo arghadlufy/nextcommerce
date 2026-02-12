@@ -1,4 +1,8 @@
-import { mockProducts } from "@/lib/mocks";
+import {
+  mockProducts,
+  productTranslations,
+  categoryTranslations,
+} from "@/lib/mocks";
 import { PrismaClient, Prisma } from "../app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import "dotenv/config";
@@ -14,22 +18,36 @@ const prisma = new PrismaClient({
 export async function main() {
   await prisma.$transaction(async (tx) => {
     // Clean existing data inside the transaction so it is rolled back on failure
+    await tx.productTranslation.deleteMany();
+    await tx.categoryTranslation.deleteMany();
     await tx.product.deleteMany();
     await tx.category.deleteMany();
 
     // Seed categories
-    await tx.category.createMany({
-      data: [
-        { name: "Electronics", slug: "electronics" },
-        { name: "Sports", slug: "sports" },
-        { name: "Home", slug: "home" },
-        { name: "Fashion", slug: "fashion" },
-      ],
-    });
+    const categoryData = [
+      { name: "Electronics", slug: "electronics" },
+      { name: "Sports", slug: "sports" },
+      { name: "Home", slug: "home" },
+      { name: "Fashion", slug: "fashion" },
+    ];
+
+    await tx.category.createMany({ data: categoryData });
 
     const categories = await tx.category.findMany();
 
-    // Seed products; if any create fails, the whole transaction (including categories) is rolled back
+    // Seed category translations
+    for (const cat of categories) {
+      const translations = categoryTranslations[cat.name];
+      if (!translations) continue;
+
+      for (const [language, name] of Object.entries(translations)) {
+        await tx.categoryTranslation.create({
+          data: { categoryId: cat.id, language, name },
+        });
+      }
+    }
+
+    // Seed products and their translations
     for (const p of mockProducts) {
       const category = categories.find((c) => c.name === p.category);
       if (!category) {
@@ -38,12 +56,7 @@ export async function main() {
         );
       }
 
-      // INTENTIONAL TEST ERROR: uncomment this block to verify rollback behavior
-      //   if (p.name === "Wireless Headphones") {
-      //     throw new Error("Intentional test failure while creating products");
-      //   }
-
-      await tx.product.create({
+      const product = await tx.product.create({
         data: {
           name: p.name,
           description: p.description,
@@ -53,6 +66,21 @@ export async function main() {
           image: p.image,
         },
       });
+
+      // Insert translations for this product (nl, hi, etc.)
+      const translations = productTranslations[p.name];
+      if (!translations) continue;
+
+      for (const [language, t] of Object.entries(translations)) {
+        await tx.productTranslation.create({
+          data: {
+            productId: product.id,
+            language,
+            name: t.name,
+            description: t.description,
+          },
+        });
+      }
     }
   });
 }

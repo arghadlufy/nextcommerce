@@ -3,6 +3,8 @@ import Link from "next/link";
 import { getProductBySlug } from "@/lib/actions/product";
 import { formatPrice } from "@/lib/utils";
 import { notFound } from "next/navigation";
+import { resolveProduct } from "@/lib/i18n-db";
+import type { ProductWithTranslations } from "@/lib/i18n-db";
 
 export default async function ProductPage({
   params,
@@ -11,11 +13,16 @@ export default async function ProductPage({
 }) {
   const { locale, slug } = await params;
 
-  const product = await getProductBySlug(slug);
+  const rawProduct = await getProductBySlug(slug);
 
-  if (!product) {
+  if (!rawProduct) {
     notFound();
   }
+
+  const product = resolveProduct(
+    rawProduct as ProductWithTranslations,
+    locale,
+  );
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">

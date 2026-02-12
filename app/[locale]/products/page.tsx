@@ -8,23 +8,35 @@ import { Pagination } from "@/components/Pagination";
 import ProductsSkeleton from "./ProductsSkeleton";
 import { Suspense } from "react";
 import { PAGE_SIZE } from "@/lib/constants";
+import { resolveProduct } from "@/lib/i18n-db";
 
 // Products component
 // Fetching happens here so we can wrap it in Suspense.
-async function Products({ page }: { page: number }) {
+async function Products({
+  page,
+  locale,
+}: {
+  page: number;
+  locale: string;
+}) {
   const skip = (page - 1) * PAGE_SIZE;
 
   const products = await db.product.findMany({
-    include: { category: true },
+    include: {
+      category: { include: { translations: true } },
+      translations: true,
+    },
     skip,
     take: PAGE_SIZE,
   });
 
   // await delay(3000); // artificial delay – test loading state
 
+  const resolved = products.map((p) => resolveProduct(p, locale));
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-      {products.map((product) => (
+      {resolved.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </div>
@@ -62,7 +74,7 @@ export default async function ProductsPage({
 
       <div className="flex flex-col gap-6">
         <Suspense key={page} fallback={<ProductsSkeleton />}>
-          <Products page={page} />
+          <Products page={page} locale={locale} />
         </Suspense>
         <Pagination currentPage={page} totalPages={totalPages} />
       </div>

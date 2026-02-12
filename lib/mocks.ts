@@ -51,3 +51,85 @@ export const mockProducts: Product[] = [
     category: "Fashion",
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Translation data for seeding
+// Keyed by English product name → { language → { name, description } }
+// ---------------------------------------------------------------------------
+
+export type ProductTranslationData = {
+  name: string;
+  description: string;
+};
+
+export const productTranslations: Record<
+  string,
+  Record<string, ProductTranslationData>
+> = {
+  "Wireless Headphones": {
+    nl: {
+      name: "Draadloze Koptelefoon",
+      description:
+        "Premium ruisonderdrukkende draadloze koptelefoon met lange batterijduur.",
+    },
+    hi: {
+      name: "वायरलेस हेडफ़ोन",
+      description:
+        "लंबी बैटरी लाइफ वाले प्रीमियम नॉइज़-कैंसलिंग वायरलेस हेडफ़ोन।",
+    },
+  },
+  "Smart Watch": {
+    nl: {
+      name: "Slimme Horloge",
+      description:
+        "Fitnesstracker met hartslagmeting en slaapanalyse.",
+    },
+    hi: {
+      name: "स्मार्ट वॉच",
+      description:
+        "हृदय गति निगरानी और नींद विश्लेषण के साथ फिटनेस ट्रैकर।",
+    },
+  },
+  "Running Shoes": {
+    nl: {
+      name: "Hardloopschoenen",
+      description: "Lichte hardloopschoenen met responsieve demping.",
+    },
+    hi: {
+      name: "रनिंग शूज़",
+      description: "रिस्पॉन्सिव कुशनिंग वाले हल्के रनिंग शूज़।",
+    },
+  },
+  "Ceramic Mug": {
+    nl: {
+      name: "Keramische Mok",
+      description: "Handgemaakt keramisch mok met minimalistisch ontwerp.",
+    },
+    hi: {
+      name: "सिरेमिक मग",
+      description: "न्यूनतम डिज़ाइन वाला हस्तनिर्मित सिरेमिक मग।",
+    },
+  },
+  "Leather Backpack": {
+    nl: {
+      name: "Leren Rugzak",
+      description: "Duurzame leren rugzak met meerdere compartimenten.",
+    },
+    hi: {
+      name: "लेदर बैकपैक",
+      description: "कई कम्पार्टमेंट वाला टिकाऊ लेदर बैकपैक।",
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Category translations
+// Keyed by English category name → { language → translated name }
+// ---------------------------------------------------------------------------
+
+export const categoryTranslations: Record<string, Record<string, string>> = {
+  Electronics: { nl: "Elektronica", hi: "इलेक्ट्रॉनिक्स" },
+  Sports: { nl: "Sport", hi: "खेल" },
+  Home: { nl: "Huis", hi: "घर" },
+  Fashion: { nl: "Mode", hi: "फैशन" },
+};

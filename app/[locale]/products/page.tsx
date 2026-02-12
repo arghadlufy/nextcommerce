@@ -20,7 +20,7 @@ async function Products({ page }: { page: number }) {
     take: PAGE_SIZE,
   });
 
-  await delay(3000); // artificial delay – test loading state
+  // await delay(3000); // artificial delay – test loading state
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">

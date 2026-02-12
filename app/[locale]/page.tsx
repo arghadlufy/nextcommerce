@@ -6,7 +6,35 @@ import { ProductCard } from "./ProductCard";
 import { db } from "@/lib/db";
 import { delay } from "@/lib/utils";
 import { Pagination } from "@/components/Pagination";
+import ProductsSkeleton from "./products/ProductsSkeleton";
+import { Suspense } from "react";
 
+const pageSize = 3;
+
+// Products component
+// fetching should happen here as we will wrap this in suspense.
+async function Products({ page }: { page: number }) {
+  const skip = (page - 1) * pageSize;
+
+  const products = await db.product.findMany({
+    include: { category: true },
+    skip,
+    take: pageSize,
+  });
+
+  await delay(3000); // artificial delay – test loading state
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      {products.map((product) => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  );
+}
+
+// Page component
+// searchParams pages the page dynamic, so this lost the capabilty of skeleton loading.
 export default async function LocaleHomePage({
   params,
   searchParams,
@@ -19,25 +47,15 @@ export default async function LocaleHomePage({
 
   if (!hasLocale(locale)) notFound();
 
-  const page = Number(pageParam) || 1;
-  const pageSize = 3;
-  const skip = (page - 1) * pageSize;
-
-  const products = await db.product.findMany({
-    include: { category: true },
-    skip,
-    take: pageSize,
-  });
-
   const totalProducts = await db.product.count();
-  const totalPages = Math.ceil(totalProducts / pageSize);
 
-  await delay(3000); // artificial delay – test loading state
+  const page = Number(pageParam) || 1;
+  const totalPages = Math.ceil(totalProducts / pageSize);
 
   const dict = await getDictionary(locale as Locale);
   const showingText = dict.products.showingCount.replace(
     "{count}",
-    String(products.length),
+    String(totalProducts),
   );
 
   return (
@@ -48,11 +66,10 @@ export default async function LocaleHomePage({
 
       <p className="text-text-body mb-6">{showingText}</p>
       <div className="flex flex-col gap-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {/* Suspense is used to wrap the Products component and handle the loading state. */}
+        <Suspense key={page} fallback={<ProductsSkeleton />}>
+          <Products key={page} page={page} />
+        </Suspense>
         <Pagination currentPage={page} totalPages={totalPages} />
       </div>
     </main>

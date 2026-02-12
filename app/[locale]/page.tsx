@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { mockProducts } from "@/lib/mocks";
 import { getDictionary, hasLocale } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n-constants";
 import { ProductCard } from "./ProductCard";
+import { db } from "@/lib/db";
 
 export default async function LocaleHomePage({
   params,
@@ -13,10 +13,14 @@ export default async function LocaleHomePage({
   const { locale } = await params;
   if (!hasLocale(locale)) notFound();
 
+  const products = await db.product.findMany({
+    include: { category: true },
+  });
+
   const dict = await getDictionary(locale as Locale);
   const showingText = dict.products.showingCount.replace(
     "{count}",
-    String(mockProducts.length),
+    String(products.length),
   );
 
   return (
@@ -27,13 +31,8 @@ export default async function LocaleHomePage({
 
       <p className="text-text-body mb-6">{showingText}</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        {mockProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            locale={locale}
-            addToCartLabel={dict.products.addToCart}
-          />
+        {products.map((product) => (
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
     </main>

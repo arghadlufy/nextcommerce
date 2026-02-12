@@ -11,6 +11,9 @@ model Product {
   id          String  @id @default(cuid())
   name        String
   description String?
+  price       Float
+  image String?
+  slug String @unique
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id]) // one-to-many relationship

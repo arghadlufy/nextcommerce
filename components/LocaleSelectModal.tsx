@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { setLocaleAndRedirect } from "@/app/actions/locale";
-import { SUPPORTED_LOCALES, LOCALE_LABELS, type Locale } from "@/lib/i18n-constants";
+import {
+  SUPPORTED_LOCALES,
+  LOCALE_LABELS,
+  type Locale,
+} from "@/lib/i18n-constants";
 
 const MODAL_LABELS = {
   title: "Select your region",
@@ -14,7 +18,7 @@ export function LocaleSelectModal() {
   const [locale, setLocale] = useState<Locale>("en-BE");
   const [pending, setPending] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
     setPending(true);
     await setLocaleAndRedirect(locale);
@@ -28,11 +32,17 @@ export function LocaleSelectModal() {
         aria-modal="true"
         aria-labelledby="locale-modal-title"
       >
-        <h1 id="locale-modal-title" className="text-xl font-semibold text-text-heading mb-4">
+        <h1
+          id="locale-modal-title"
+          className="text-xl font-semibold text-text-heading mb-4"
+        >
           {MODAL_LABELS.title}
         </h1>
         <form onSubmit={handleSubmit}>
-          <label htmlFor="locale-select" className="block text-sm font-medium text-text-body mb-2">
+          <label
+            htmlFor="locale-select"
+            className="block text-sm font-medium text-text-body mb-2"
+          >
             {MODAL_LABELS.selectLabel}
           </label>
           <select
